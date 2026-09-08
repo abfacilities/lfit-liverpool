@@ -551,7 +551,7 @@ document.addEventListener('DOMContentLoaded', function () {
       buttons.forEach(function (b) { b.disabled = true; });
       btn.textContent = 'Redirecting to secure checkout...';
       errorEl.style.display = 'none';
-      fetch('/.netlify/functions/create-checkout-session', {
+      fetch('/api/create-checkout-session', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ plan: plan })
