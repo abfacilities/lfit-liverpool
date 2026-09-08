@@ -8,7 +8,7 @@
 //   RESEND_API_KEY     - API key from resend.com
 //
 // Optional environment variables:
-//   CONTACT_TO_EMAIL    - Where enquiries land. Defaults to adam.byrne@lfitlpl.com
+//   CONTACT_TO_EMAIL    - Where enquiries land. Defaults to contact@lfitlpl.com
 //   CONTACT_FROM_EMAIL  - Verified sending address, e.g. "L-FIT Website <contact@lfitlpl.com>".
 //                          Defaults to Resend's shared sandbox sender, which only works
 //                          once RESEND_API_KEY's account has verified CONTACT_TO_EMAIL's
@@ -58,7 +58,7 @@ export async function onRequestPost(context) {
     });
   }
 
-  const toEmail = env.CONTACT_TO_EMAIL || 'adam.byrne@lfitlpl.com';
+  const toEmail = env.CONTACT_TO_EMAIL || 'contact@lfitlpl.com';
   const fromEmail = env.CONTACT_FROM_EMAIL || 'L-FIT Website <onboarding@resend.dev>';
 
   try {
