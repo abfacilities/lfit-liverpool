@@ -802,8 +802,7 @@ contact_body = """
       </div>
     </div>
     <div class="form-card">
-      <form name="contact" method="POST" data-netlify="true" netlify-honeypot="bot-field">
-        <input type="hidden" name="form-name" value="contact">
+      <form id="contact-form">
         <p style="display:none"><label>Don't fill this out: <input name="bot-field"></label></p>
         <div class="field">
           <label for="c-name">Full name</label>
@@ -818,10 +817,54 @@ contact_body = """
           <textarea id="c-message" name="message" required></textarea>
         </div>
         <button type="submit" class="btn block">Send Message</button>
+        <p id="contact-form-status" style="margin-top:12px;font-size:.9rem"></p>
       </form>
     </div>
   </div>
 </section>
+
+<script>
+(function () {
+  var form = document.getElementById('contact-form');
+  var status = document.getElementById('contact-form-status');
+  if (!form) return;
+  form.addEventListener('submit', function (e) {
+    e.preventDefault();
+    var btn = form.querySelector('button[type="submit"]');
+    btn.disabled = true;
+    status.style.color = 'var(--muted)';
+    status.textContent = 'Sending...';
+    var data = {
+      name: form.name.value,
+      email: form.email.value,
+      message: form.message.value,
+      'bot-field': form['bot-field'].value
+    };
+    fetch('/api/contact', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(data)
+    })
+      .then(function (res) { return res.json().then(function (body) { return { ok: res.ok, body: body }; }); })
+      .then(function (result) {
+        btn.disabled = false;
+        if (result.ok) {
+          status.style.color = 'var(--teal)';
+          status.textContent = "Thanks \u2014 we've got your message and will get back to you soon.";
+          form.reset();
+        } else {
+          status.style.color = '#ff6b6b';
+          status.textContent = (result.body && result.body.error) || 'Something went wrong. Please try again or message us on Instagram.';
+        }
+      })
+      .catch(function () {
+        btn.disabled = false;
+        status.style.color = '#ff6b6b';
+        status.textContent = 'Something went wrong. Please try again or message us on Instagram.';
+      });
+  });
+})();
+</script>
 """
 write("contact/index.html", page(
     "Contact L-FIT Liverpool &amp; L-FIT Kids | Bootle",
