@@ -18,7 +18,7 @@ IG_ADULT = "https://www.instagram.com/lfit_liverpool/"
 IG_KIDS = "https://www.instagram.com/lfit_kids/"
 CLASSFORKIDS_URL = "https://l-fit-kids.classforkids.io/"
 
-def head(title, desc, canonical_path):
+def head(title, desc, canonical_path, ogimage="lfit-liverpool-logo.jpg"):
     canonical = f"https://www.lfitlpl.com{canonical_path}"
     return f"""<!DOCTYPE html>
 <html lang="en">
@@ -34,9 +34,9 @@ def head(title, desc, canonical_path):
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="{title}">
 <meta name="twitter:description" content="{desc}">
-<meta property="og:image" content="https://www.lfitlpl.com/assets/lfit-icon.png">
-<link rel="icon" href="/assets/lfit-icon.png" type="image/png">
-<link rel="apple-touch-icon" href="/assets/lfit-icon.png">
+<meta property="og:image" content="https://www.lfitlpl.com/assets/{ogimage}">
+<link rel="icon" href="/assets/favicon.png" type="image/png">
+<link rel="apple-touch-icon" href="/assets/favicon.png">
 <link rel="stylesheet" href="/assets/style.css">
 <link rel="canonical" href="{canonical}">
 </head>
@@ -110,8 +110,8 @@ def footer():
 </html>
 """
 
-def page(title, desc, path, active, body):
-    return head(title, desc, path) + header(active) + body + footer()
+def page(title, desc, path, active, body, ogimage="lfit-liverpool-logo.jpg"):
+    return head(title, desc, path, ogimage) + header(active) + body + footer()
 
 def write(relpath, content):
     full = os.path.join(ROOT, relpath.lstrip("/"))
@@ -184,7 +184,7 @@ home_body = """
       <div class="card">
         <div class="icon">&#129309;</div>
         <h3>One Community</h3>
-        <p>A members WhatsApp group, community events like our run club with Anna's Coffee Shop, and a gym that knows its own.</p>
+        <p>A members WhatsApp group, community events like our run club with Anna's Coffee Shop, and a gym that knows its own. <a href="/about/#community">Read about L-FIT In The Community &rarr;</a></p>
       </div>
       <div class="card">
         <div class="icon">&#128200;</div>
@@ -439,7 +439,7 @@ kids_body = """
 write("kids/index.html", page(
     "L-FIT Kids | Kids Boxing, Fitness &amp; Hyrox Classes in Bootle",
     "L-FIT Kids: boxing, fitness and Hyrox-style classes for ages 5-16 in Bootle, Liverpool. Confidence Starts Here. Book online via ClassForKids.",
-    "/kids/", "/kids/", kids_body
+    "/kids/", "/kids/", kids_body, ogimage="lfit-kids-logo.jpg"
 ))
 
 # ---------------------------------------------------------------------------
@@ -642,6 +642,21 @@ about_body = """
       <div class="icon">&#127968;</div>
       <h3>Bootle, Liverpool L20</h3>
       <p>Both L-FIT and L-FIT Kids run from the same gym in Bootle &mdash; one space, one coaching team, one community for the whole family.</p>
+    </div>
+  </div>
+</section>
+
+<section id="community" class="tight">
+  <div class="container two-col">
+    <div>
+      <div class="eyebrow">L-FIT In The Community</div>
+      <h2>Fitness shouldn't be <span class="text-gradient">out of reach.</span></h2>
+      <p style="color:var(--muted)">Cost and confidence stop a lot of people from ever walking through the door &mdash; especially anyone managing their mental health, recovering from illness, or just getting back into movement after a hard stretch. L-FIT In The Community is our commitment to keeping fitness genuinely affordable for children and adults across Bootle and the wider North Liverpool community, whatever your starting point.</p>
+      <p style="color:var(--muted)">If cost is a barrier for you or your child, message us directly &mdash; we'll always try to find a way to get you involved.</p>
+      <a href="/contact/" class="btn outline">Get In Touch &rarr;</a>
+    </div>
+    <div>
+      <img src="/assets/lfit-community-logo.jpg" alt="L-FIT In The Community" style="border-radius:var(--radius);border:1px solid var(--border)">
     </div>
   </div>
 </section>
