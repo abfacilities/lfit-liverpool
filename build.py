@@ -45,8 +45,7 @@ def head(title, desc, canonical_path, ogimage="lfit-liverpool-logo.jpg"):
 
 def logo_html():
     return """<a href="/" class="logo">
-      <span class="mark"><span class="l">L</span><span class="bolt">&#9889;</span><span class="fit">FIT</span></span>
-      <span class="sub">Liverpool</span>
+      <img src="/assets/lfit-liverpool-logo.jpg" alt="L-FIT Liverpool" class="logo-img">
     </a>"""
 
 def header(active):
@@ -72,7 +71,7 @@ def footer():
     return f"""<footer class="site">
   <div class="container grid">
     <div>
-      <span class="mark"><span class="l">L</span><span class="bolt">&#9889;</span><span class="fit">FIT</span></span>
+      <img src="/assets/lfit-liverpool-logo.jpg" alt="L-FIT Liverpool" class="footer-logo-img">
       <p style="margin-top:14px">Adult strength &amp; conditioning classes and a dedicated kids programme, under one roof in Bootle, Liverpool.</p>
       <div class="social-row">
         <a href="{IG_ADULT}" aria-label="L-FIT Liverpool on Instagram" target="_blank" rel="noopener">IG</a>
