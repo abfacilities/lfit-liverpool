@@ -7,9 +7,12 @@ NAV_ITEMS = [
     ("/gym/", "The Gym"),
     ("/kids/", "L-FIT Kids"),
     ("/join/", "Join"),
+    ("/community/", "Community"),
     ("/about/", "About"),
     ("/contact/", "Contact"),
 ]
+
+DONATE_URL = "https://buy.stripe.com/9B628q55g91Y2Wi7qc9Zm00"
 
 SITE_NAME = "L-FIT Liverpool"
 PHONE = "07490 730237"
@@ -43,12 +46,12 @@ def head(title, desc, canonical_path, ogimage="lfit-liverpool-logo.jpg"):
 <body>
 """
 
-def logo_html():
-    return """<a href="/" class="logo">
-      <img src="/assets/lfit-liverpool-logo.jpg" alt="L-FIT Liverpool" class="logo-img">
+def logo_html(logo_img="lfit-liverpool-logo.jpg", logo_alt="L-FIT Liverpool"):
+    return f"""<a href="/" class="logo">
+      <img src="/assets/{logo_img}" alt="{logo_alt}" class="logo-img">
     </a>"""
 
-def header(active):
+def header(active, logo_img="lfit-liverpool-logo.jpg", logo_alt="L-FIT Liverpool"):
     links = []
     for href, label in NAV_ITEMS:
         cls = " active" if href == active else ""
@@ -56,7 +59,7 @@ def header(active):
     nav_links = "".join(links)
     return f"""<header class="site">
   <div class="container nav-row">
-    {logo_html()}
+    {logo_html(logo_img, logo_alt)}
     <nav class="main" id="site-nav">{nav_links}</nav>
     <button class="nav-toggle" aria-label="Toggle menu" aria-expanded="false" aria-controls="site-nav"><span></span><span></span><span></span></button>
     <div class="nav-cta">
@@ -86,6 +89,7 @@ def footer():
     </div>
     <div>
       <h4>Company</h4>
+      <a href="/community/">Community</a>
       <a href="/about/">About</a>
       <a href="/contact/">Contact</a>
     </div>
@@ -109,8 +113,9 @@ def footer():
 </html>
 """
 
-def page(title, desc, path, active, body, ogimage="lfit-liverpool-logo.jpg"):
-    return head(title, desc, path, ogimage) + header(active) + body + footer()
+def page(title, desc, path, active, body, ogimage="lfit-liverpool-logo.jpg", logo_img=None, logo_alt="L-FIT Liverpool"):
+    header_logo = logo_img if logo_img else ogimage
+    return head(title, desc, path, ogimage) + header(active, header_logo, logo_alt) + body + footer()
 
 def write(relpath, content):
     full = os.path.join(ROOT, relpath.lstrip("/"))
@@ -183,7 +188,7 @@ home_body = """
       <div class="card">
         <div class="icon">&#129309;</div>
         <h3>One Community</h3>
-        <p>A members WhatsApp group, community events like our run club with Anna's Coffee Shop, and a gym that knows its own. <a href="/about/#community">Read about L-FIT In The Community &rarr;</a></p>
+        <p>A members WhatsApp group, community events like our run club with Anna's Coffee Shop, and a gym that knows its own. <a href="/community/">Read about L-FIT In The Community &rarr;</a></p>
       </div>
       <div class="card">
         <div class="icon">&#128200;</div>
@@ -438,7 +443,94 @@ kids_body = """
 write("kids/index.html", page(
     "L-FIT Kids | Kids Boxing, Fitness &amp; Hyrox Classes in Bootle",
     "L-FIT Kids: boxing, fitness and Hyrox-style classes for ages 5-16 in Bootle, Liverpool. Confidence Starts Here. Book online via ClassForKids.",
-    "/kids/", "/kids/", kids_body, ogimage="lfit-kids-logo.jpg"
+    "/kids/", "/kids/", kids_body, ogimage="lfit-kids-logo.jpg", logo_alt="L-FIT Kids"
+))
+
+# ---------------------------------------------------------------------------
+# COMMUNITY
+# ---------------------------------------------------------------------------
+community_body = """
+<section class="hero">
+  <div class="container">
+    <div class="eyebrow">L-FIT In The Community</div>
+    <h1>More than fitness.<br><span class="text-gradient">We're a community hub.</span></h1>
+    <p class="hero-lede">Low-cost training for people across Bootle and North Liverpool who are struggling &mdash; physically or mentally &mdash; and need an affordable, judgement-free way back into movement.</p>
+    <div class="hero-actions">
+      <a href="{donate_url}" class="btn" target="_blank" rel="noopener">Donate Now &rarr;</a>
+      <a href="/contact/" class="btn outline">Get In Touch</a>
+    </div>
+  </div>
+</section>
+
+<section class="tight">
+  <div class="container two-col">
+    <div>
+      <div class="eyebrow">Our Mission</div>
+      <h2>Fitness shouldn't be <span class="text-gradient">out of reach.</span></h2>
+      <p style="color:var(--muted)">Cost and confidence stop a lot of people from ever walking through the door &mdash; especially anyone managing their mental health, recovering from illness, or just getting back into movement after a hard stretch.</p>
+      <p style="color:var(--muted)">L-FIT In The Community is our commitment to keeping training genuinely affordable for children and adults across Bootle and the wider North Liverpool community, whatever your starting point. We're not just a gym &mdash; we're a community hub, and we'd rather find a way to include you than turn you away.</p>
+      <p style="color:var(--muted)">If cost is a barrier for you or your child, message us directly &mdash; we'll always try to find a way to get you involved.</p>
+    </div>
+    <div>
+      <img src="/assets/lfit-community-logo.jpg" alt="L-FIT In The Community" style="border-radius:var(--radius);border:1px solid var(--border)">
+    </div>
+  </div>
+</section>
+
+<section class="tight">
+  <div class="container">
+    <div class="section-head">
+      <div class="eyebrow">Support The Work</div>
+      <h2>Help us keep training <span class="text-gradient">affordable.</span></h2>
+      <p>Every donation goes directly towards low-cost and subsidised places for people in our community who couldn't otherwise afford to train.</p>
+    </div>
+    <div class="card" style="max-width:720px">
+      <div class="icon">&#10084;</div>
+      <h3>Make A Donation</h3>
+      <p>Choose your own amount &mdash; every contribution, big or small, helps us keep the doors open to people who need us most.</p>
+      <a href="{donate_url}" class="btn" target="_blank" rel="noopener">Donate Now &rarr;</a>
+    </div>
+  </div>
+</section>
+
+<section class="tight">
+  <div class="container">
+    <div class="section-head">
+      <div class="eyebrow">Out In The Community</div>
+      <h2>More than just <span class="text-gradient">classes.</span></h2>
+    </div>
+    <div class="grid">
+      <div class="card">
+        <div class="icon">&#9749;</div>
+        <h3>Run Club with Anna's Coffee Shop</h3>
+        <p>We've teamed up with Anna's Coffee Shop for a community run club &mdash; a 5K followed by coffee and croissants. Run. Coffee. Community.</p>
+      </div>
+      <div class="card">
+        <div class="icon">&#127942;</div>
+        <h3>L-FIT Kids Summer Camp</h3>
+        <p>School holiday camps packed with fitness games, sports games, mindful arts &amp; crafts and team challenges.</p>
+      </div>
+      <div class="card">
+        <div class="icon">&#128172;</div>
+        <h3>Members WhatsApp Group</h3>
+        <p>Every adult member gets added to our WhatsApp community &mdash; class updates, timetable changes and a bit of banter.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="cta-band">
+  <div class="container">
+    <h2>Struggling to get started? <span class="text-gradient">Talk to us.</span></h2>
+    <p>Whether it's cost, confidence, or just not knowing where to begin &mdash; get in touch and we'll help you find a way in.</p>
+    <a href="/contact/" class="btn" target="_blank" rel="noopener">Get In Touch &rarr;</a>
+  </div>
+</section>
+""".format(donate_url=DONATE_URL)
+write("community/index.html", page(
+    "L-FIT In The Community | Low-Cost Training &amp; Donations in Bootle",
+    "L-FIT In The Community: low-cost training for people across Bootle and North Liverpool struggling physically or mentally. We're more than fitness, we're a community hub. Support us with a donation.",
+    "/community/", "/community/", community_body, ogimage="lfit-community-logo.jpg", logo_alt="L-FIT In The Community"
 ))
 
 # ---------------------------------------------------------------------------
@@ -650,38 +742,11 @@ about_body = """
     <div>
       <div class="eyebrow">L-FIT In The Community</div>
       <h2>Fitness shouldn't be <span class="text-gradient">out of reach.</span></h2>
-      <p style="color:var(--muted)">Cost and confidence stop a lot of people from ever walking through the door &mdash; especially anyone managing their mental health, recovering from illness, or just getting back into movement after a hard stretch. L-FIT In The Community is our commitment to keeping fitness genuinely affordable for children and adults across Bootle and the wider North Liverpool community, whatever your starting point.</p>
-      <p style="color:var(--muted)">If cost is a barrier for you or your child, message us directly &mdash; we'll always try to find a way to get you involved.</p>
-      <a href="/contact/" class="btn outline">Get In Touch &rarr;</a>
+      <p style="color:var(--muted)">We're more than a gym &mdash; L-FIT is a community hub, running low-cost training for people across Bootle and North Liverpool who are struggling physically or mentally, and who need an affordable, judgement-free way back into movement.</p>
+      <a href="/community/" class="btn outline">Read About L-FIT In The Community &rarr;</a>
     </div>
     <div>
       <img src="/assets/lfit-community-logo.jpg" alt="L-FIT In The Community" style="border-radius:var(--radius);border:1px solid var(--border)">
-    </div>
-  </div>
-</section>
-
-<section class="tight">
-  <div class="container">
-    <div class="section-head">
-      <div class="eyebrow">Out In The Community</div>
-      <h2>More than just <span class="text-gradient">classes.</span></h2>
-    </div>
-    <div class="grid">
-      <div class="card">
-        <div class="icon">&#9749;</div>
-        <h3>Run Club with Anna's Coffee Shop</h3>
-        <p>We've teamed up with Anna's Coffee Shop for a community run club &mdash; a 5K followed by coffee and croissants. Run. Coffee. Community.</p>
-      </div>
-      <div class="card">
-        <div class="icon">&#127942;</div>
-        <h3>L-FIT Kids Summer Camp</h3>
-        <p>School holiday camps packed with fitness games, sports games, mindful arts &amp; crafts and team challenges.</p>
-      </div>
-      <div class="card">
-        <div class="icon">&#128172;</div>
-        <h3>Members WhatsApp Group</h3>
-        <p>Every adult member gets added to our WhatsApp community &mdash; class updates, timetable changes and a bit of banter.</p>
-      </div>
     </div>
   </div>
 </section>
