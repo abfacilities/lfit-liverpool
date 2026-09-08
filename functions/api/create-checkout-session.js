@@ -1,7 +1,11 @@
 // Creates a Stripe Checkout Session for an L-FIT membership (recurring) or
 // a single drop-in class / free-trial hold (one-off, or zero-value).
 //
-// Cloudflare Pages Function (replaces the old Netlify Function of the same purpose).
+// Cloudflare Pages Function. Calls the Stripe REST API directly via fetch
+// rather than the Stripe Node SDK, since Cloudflare Pages Functions does not
+// run `npm install` for the functions/ bundle, so npm packages like "stripe"
+// cannot be resolved at build time.
+//
 // Required environment variables (set in Cloudflare Pages project settings, never in git):
 //   STRIPE_SECRET_KEY        - Stripe secret key (sk_live_... or sk_test_...)
 //   STRIPE_PRICE_4CLASS      - Price ID for the "4 classes / month" membership (£35/mo)
@@ -10,8 +14,6 @@
 //
 // The Price objects themselves (amount, currency, recurring interval) are configured
 // in the Stripe Dashboard, not in this code, so pricing changes never need a redeploy.
-
-import Stripe from 'stripe';
 
 export async function onRequestPost(context) {
   const { request, env } = context;
@@ -47,22 +49,35 @@ export async function onRequestPost(context) {
     });
   }
 
-  // Cloudflare Workers runtime: use Stripe's fetch-based HTTP client rather than
-  // the default Node http client, per Stripe's edge-runtime guidance.
-  const stripe = new Stripe(env.STRIPE_SECRET_KEY, {
-    httpClient: Stripe.createFetchHttpClient()
-  });
   const siteUrl = new URL(request.url).origin;
 
+  const body = new URLSearchParams();
+  body.set('mode', 'subscription');
+  body.set('line_items[0][price]', priceId);
+  body.set('line_items[0][quantity]', '1');
+  body.set('success_url', `${siteUrl}/join/success/?session_id={CHECKOUT_SESSION_ID}`);
+  body.set('cancel_url', `${siteUrl}/join/cancelled/`);
+  body.set('allow_promotion_codes', 'true');
+  body.set('billing_address_collection', 'auto');
+
   try {
-    const session = await stripe.checkout.sessions.create({
-      mode: 'subscription',
-      line_items: [{ price: priceId, quantity: 1 }],
-      success_url: `${siteUrl}/join/success/?session_id={CHECKOUT_SESSION_ID}`,
-      cancel_url: `${siteUrl}/join/cancelled/`,
-      allow_promotion_codes: true,
-      billing_address_collection: 'auto'
+    const stripeRes = await fetch('https://api.stripe.com/v1/checkout/sessions', {
+      method: 'POST',
+      headers: {
+        Authorization: `Bearer ${env.STRIPE_SECRET_KEY}`,
+        'Content-Type': 'application/x-www-form-urlencoded'
+      },
+      body: body.toString()
     });
+
+    const session = await stripeRes.json();
+
+    if (!stripeRes.ok) {
+      return new Response(
+        JSON.stringify({ error: 'Could not start checkout. Please try again or contact L-FIT directly.' }),
+        { status: 500, headers: { 'Content-Type': 'application/json' } }
+      );
+    }
 
     return new Response(JSON.stringify({ url: session.url }), {
       status: 200,
