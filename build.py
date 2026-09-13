@@ -22,6 +22,17 @@ IG_KIDS = "https://www.instagram.com/lfit_kids/"
 CLASSFORKIDS_URL = "https://l-fit-kids.classforkids.io/"
 WHATSAPP_URL = "https://wa.me/447490730237"
 
+GA4_SNIPPET = """<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-M9T8NWNPMD"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-M9T8NWNPMD');
+</script>
+"""
+
 LOCAL_BUSINESS_JSONLD = """<script type="application/ld+json">
 {
   "@context": "https://schema.org",
@@ -66,7 +77,7 @@ def head(title, desc, canonical_path, ogimage="lfit-liverpool-logo.jpg"):
     return f"""<!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
+{GA4_SNIPPET}<meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>{title}</title>
 <meta name="description" content="{desc}">
