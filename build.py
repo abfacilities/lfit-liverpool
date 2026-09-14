@@ -72,6 +72,32 @@ LOCAL_BUSINESS_JSONLD = """<script type="application/ld+json">
 </script>
 """
 
+IG_EMBED_SCRIPT = """<script async src="https://www.instagram.com/embed.js"></script>
+"""
+
+def ig_embed(permalink):
+    return f'''<blockquote class="instagram-media" data-instgrm-captioned data-instgrm-permalink="{permalink}" data-instgrm-version="14" style="background:#FFF; border:0; border-radius:3px; box-shadow:0 0 1px 0 rgba(0,0,0,0.5),0 1px 10px 0 rgba(0,0,0,0.15); margin:0 auto; max-width:400px; min-width:326px; padding:0; width:99.375%;"></blockquote>'''
+
+def ig_grid(permalinks):
+    return '<div class="ig-embed-grid">\n' + '\n'.join(ig_embed(p) for p in permalinks) + '\n</div>\n' + IG_EMBED_SCRIPT
+
+KIDS_REELS = [
+    "https://www.instagram.com/reel/DZqJytmO5Xn/",
+    "https://www.instagram.com/reel/DZpb1XIsg90/",
+    "https://www.instagram.com/p/DX8_hY7DEce/",
+    "https://www.instagram.com/p/DKyzrHLsnwc/",
+    "https://www.instagram.com/p/DbL16oXjldy/",
+]
+GYM_REELS = [
+    "https://www.instagram.com/reel/DcMg6oHtmZL/",
+    "https://www.instagram.com/reel/Db849FxNHTg/",
+    "https://www.instagram.com/reel/Db3rPBEtJRL/",
+]
+COMMUNITY_REELS = [
+    "https://www.instagram.com/reel/DZVcKK2NXKP/",
+    "https://www.instagram.com/reel/DZLC2hXCWtb/",
+]
+
 def head(title, desc, canonical_path, ogimage="lfit-liverpool-logo.jpg"):
     canonical = f"https://www.lfitlpl.com{canonical_path}"
     return f"""<!DOCTYPE html>
@@ -297,7 +323,7 @@ write("index.html", page(
 # ---------------------------------------------------------------------------
 # GYM (adults)
 # ---------------------------------------------------------------------------
-gym_body = """
+gym_body = f"""
 <section class="hero">
   <div class="container">
     <div class="eyebrow">L-FIT Adults</div>
@@ -399,6 +425,17 @@ gym_body = """
   </div>
 </section>
 
+<section class="tight">
+  <div class="container">
+    <div class="section-head">
+      <div class="eyebrow">See It In Action</div>
+      <h2>From the <span class="text-gradient">gym floor.</span></h2>
+      <p>A look at what a session actually looks like &mdash; follow @lfit_liverpool on Instagram for more.</p>
+    </div>
+    {ig_grid(GYM_REELS)}
+  </div>
+</section>
+
 <section class="cta-band">
   <div class="container">
     <h2>Ready to <span class="text-gradient">get started?</span></h2>
@@ -416,7 +453,7 @@ write("gym/index.html", page(
 # ---------------------------------------------------------------------------
 # KIDS
 # ---------------------------------------------------------------------------
-kids_body = """
+kids_body = f"""
 <section class="hero">
   <div class="container">
     <div class="eyebrow">L-FIT Kids &middot; Ages 5&ndash;16</div>
@@ -510,6 +547,17 @@ kids_body = """
   </div>
 </section>
 
+<section class="tight">
+  <div class="container">
+    <div class="section-head">
+      <div class="eyebrow">See It In Action</div>
+      <h2>From the <span class="text-gradient">kids floor.</span></h2>
+      <p>A look at what a session actually looks like &mdash; follow @lfit_kids on Instagram for more.</p>
+    </div>
+    {ig_grid(KIDS_REELS)}
+  </div>
+</section>
+
 <section class="cta-band">
   <div class="container">
     <h2>Book your child's <span class="text-gradient">first class</span></h2>
@@ -597,6 +645,17 @@ community_body = """
   </div>
 </section>
 
+<section class="tight">
+  <div class="container">
+    <div class="section-head">
+      <div class="eyebrow">Community In Action</div>
+      <h2>More than just <span class="text-gradient">a gym.</span></h2>
+      <p>A look at what we get up to out in the community.</p>
+    </div>
+    {ig_community}
+  </div>
+</section>
+
 <section class="cta-band">
   <div class="container">
     <h2>Struggling to get started? <span class="text-gradient">Talk to us.</span></h2>
@@ -604,7 +663,7 @@ community_body = """
     <a href="/contact/" class="btn" target="_blank" rel="noopener">Get In Touch &rarr;</a>
   </div>
 </section>
-""".format(donate_url=DONATE_URL)
+""".format(donate_url=DONATE_URL, ig_community=ig_grid(COMMUNITY_REELS))
 write("community/index.html", page(
     "L-FIT In The Community | Low-Cost Training &amp; Donations in Bootle",
     "L-FIT In The Community: low-cost training for people across Bootle and North Liverpool struggling physically or mentally. We're more than fitness, we're a community hub. Support us with a donation.",
