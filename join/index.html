@@ -99,8 +99,7 @@
       </div>
     </div>
     <div class="form-card">
-      <form name="trial-request" method="POST" data-netlify="true" netlify-honeypot="bot-field">
-        <input type="hidden" name="form-name" value="trial-request">
+      <form id="trial-form">
         <p style="display:none"><label>Don't fill this out: <input name="bot-field"></label></p>
         <div class="field">
           <label for="name">Full name</label>
@@ -125,6 +124,7 @@
           </select>
         </div>
         <button type="submit" class="btn block">Claim My Free Trial Week</button>
+        <p id="trial-form-status" style="margin-top:12px;font-size:.9rem"></p>
         <p class="form-note">We'll text or email you to confirm your first class &mdash; no payment needed for your trial week.</p>
       </form>
     </div>
@@ -174,6 +174,49 @@
   </div>
 </section>
 
+<script>
+(function () {
+  var form = document.getElementById('trial-form');
+  var status = document.getElementById('trial-form-status');
+  if (!form) return;
+  form.addEventListener('submit', function (e) {
+    e.preventDefault();
+    var btn = form.querySelector('button[type="submit"]');
+    btn.disabled = true;
+    status.style.color = 'var(--muted)';
+    status.textContent = 'Sending...';
+    var data = {
+      name: form.name.value,
+      email: form.email.value,
+      phone: form.phone.value,
+      'class-pref': form['class-pref'].value,
+      'bot-field': form['bot-field'].value
+    };
+    fetch('/api/trial-request', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(data)
+    })
+      .then(function (res) { return res.json().then(function (body) { return { ok: res.ok, body: body }; }); })
+      .then(function (result) {
+        btn.disabled = false;
+        if (result.ok) {
+          status.style.color = 'var(--teal)';
+          status.textContent = "Thanks — we've got your details and will be in touch to book your first class.";
+          form.reset();
+        } else {
+          status.style.color = '#ff6b6b';
+          status.textContent = (result.body && result.body.error) || 'Something went wrong. Please try again or message us on Instagram.';
+        }
+      })
+      .catch(function () {
+        btn.disabled = false;
+        status.style.color = '#ff6b6b';
+        status.textContent = 'Something went wrong. Please try again or message us on Instagram.';
+      });
+  });
+})();
+</script>
 <script>
 document.addEventListener('DOMContentLoaded', function () {
   var buttons = document.querySelectorAll('.join-btn');
