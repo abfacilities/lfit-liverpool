@@ -11,6 +11,7 @@ export async function onRequestPost(context) {
   const { request, env } = context;
 
   if (!env.NEWSLETTER_RESEND_API_KEY || !env.ADMIN_SETUP_SECRET) {
+// redeploy trigger 2026-09-29
     return new Response(JSON.stringify({ error: 'Not configured' }), { status: 500 });
   }
 
